@@ -12,7 +12,7 @@
   chrome.runtime.sendMessage({ type: "GET_STATE" }).then(state => {
     supported = state?.supported === true;
     if (settingsRevision === 0) enabled = state?.enabled === true;
-  }).catch(() => {});
+  }).catch(() => { });
 
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (sender.id === chrome.runtime.id && message?.type === "PAGE_STATUS") {
@@ -30,12 +30,12 @@
 
   function eligibleUrl(event) {
     if (!enabled || !supported || !event.isTrusted || event.defaultPrevented ||
-        event.button !== 0 || event.ctrlKey || event.metaKey ||
-        event.shiftKey || event.altKey) return null;
+      event.button !== 0 || event.ctrlKey || event.metaKey ||
+      event.shiftKey || event.altKey) return null;
 
     const link = getLink(event);
     if (!link || link.hasAttribute("download") || link.isContentEditable ||
-        link.closest('[contenteditable="true"], [role="button"]')) return null;
+      link.closest('[contenteditable="true"], [role="button"]')) return null;
 
     // Respect named-frame, _parent, and _top navigation and <base target>.
     const target = (link.getAttribute("target") ??
@@ -50,7 +50,7 @@
       const current = new URL(location.href);
       // Anchor jumps stay within the current document, including absolute ones.
       if (url.hash && url.origin === current.origin &&
-          url.pathname === current.pathname && url.search === current.search) return null;
+        url.pathname === current.pathname && url.search === current.search) return null;
       return url.href;
     } catch { return null; }
   }

@@ -9,7 +9,15 @@
 3. 点击「加载已解压的扩展程序」，选择 **`G:\auto_split\extension`** 文件夹（不是项目根目录）。
 4. 刷新已有网页，再点击普通链接即可。也可将 Auto Split 固定在工具栏，点击图标暂停或恢复。
 
-源码无需 npm install，无需构建，也不需要 API Key。压缩包仅包含可加载的 `extension` 文件夹；使用压缩包时请先解压。
+源码无需 npm install，无需构建，也不需要 API Key。安装包仅包含插件运行文件；使用压缩包时请先解压，再选择包含 `manifest.json` 的目录加载。
+
+从 GitHub Release 下载时，选择 `auto-split-版本号.zip` 附件，解压后直接选择包含 `manifest.json` 的目录加载。最新发布包直接把插件运行文件放在 ZIP 根目录。
+
+## 打包与发布
+
+当前版本为 **1.0.2**，使用已确认的“小人推动分隔线”图标。运行 `npm run package` 会生成 `dist/auto-split-1.0.2.zip` 和 SHA-256 校验文件。打包工具使用 Python 3.9+ 标准库，不需要安装 pip 或 npm 依赖；安装插件无需 Python。
+
+完整上传步骤及可复制的发布说明见 [GitHub Release 发布指南](docs/RELEASING.md)。
 
 ## 行为
 

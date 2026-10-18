@@ -1,10 +1,11 @@
 {
   "name": "auto-split",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "private": true,
   "type": "module",
   "scripts": {
     "test": "node --test",
-    "demo": "node tools/demo-server.js"
+    "demo": "node tools/demo-server.js",
+    "package": "python tools/package.py"
   }
 }

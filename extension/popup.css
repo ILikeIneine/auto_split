@@ -22,14 +22,13 @@ header {
 }
 
 .mark {
-  display: grid;
-  place-items: center;
+  display: block;
   width: 44px;
   height: 44px;
   border-radius: 13px;
   background: #e5edff;
-  color: #395cc6;
-  font-size: 30px;
+  object-fit: contain;
+  flex-shrink: 0;
 }
 
 h1 {
