@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Auto Split</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+
+<body>
+  <header><span class="mark" aria-hidden="true">◧</span>
+    <div>
+      <h1>Auto Split</h1>
+      <p>请不要在我的眼前消失</p>
+    </div>
+  </header>
+  <div class="preview" aria-hidden="true"><span>Left</span><span>Right<b>↗</b></span></div>
+  <label class="setting"><span><strong>自动分屏</strong><small>普通点击链接，在右侧打开</small></span><input id="enabled"
+      type="checkbox" role="switch" disabled></label>
+  <p id="status" role="status" aria-live="polite">正在检查浏览器支持…</p>
+  <footer>Ctrl / ⌘ / Shift + 点击保留原有行为。<br>页内锚点、下载链接保留原有行为。<br>新分屏默认等宽；拖动后需手动调整比例。</footer>
+  <script src="popup.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Auto Split · 本地验收页</title>
+  <style>
+    :root { font: 16px/1.7 system-ui, sans-serif; color: #26354a; background: #f5f7fb; }
+    * { box-sizing: border-box; }
+    main { max-width: 860px; margin: 60px auto; padding: 0 28px; }
+    .eyebrow { color: #506aca; font-size: 12px; letter-spacing: 3px; }
+    h1 { line-height: 1.2; font-size: clamp(30px, 5vw, 48px); letter-spacing: -1px; margin: 16px 0; }
+    .intro { color: #69768b; }
+    section { border: 1px solid #e1e6f0; background: white; border-radius: 16px; padding: 24px; margin: 24px 0; }
+    h2 { font-size: 19px; margin: 0 0 10px; }
+    a { color: #3d5bc1; text-underline-offset: 4px; }
+    ul { padding-left: 22px; } li { margin: 12px 0; }
+    small { color: #7c8798; } #route { color: #4264d5; word-break: break-all; }
+    #anchor { margin-top: 50vh; } button { padding: 8px 14px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="eyebrow">AUTO SPLIT / LOCAL DEMO</div>
+    <h1>左侧保留上下文，<br>右侧打开下一步。</h1>
+    <p class="intro">安装扩展并刷新后，点击下面的链接。首次创建原生分屏，再点其他链接时只更新右侧。</p>
+    <p>当前路径：<strong id="route"></strong></p>
+    <section>
+      <h2>闪白诊断</h2>
+      <p id="diagnostics" role="status"></p>
+      <small>先记下左侧的文档标识，再打开、关闭右侧。如果标识和加载次数不变，说明左侧文档没有重新加载；宽度变化时仍可能出现重绘。跨路径导航也会改变标识。</small>
+    </section>
+    <section>
+      <h2>应在右侧打开</h2>
+      <ul>
+        <li><a href="/article-one">文章一 · 普通链接</a></li>
+        <li><a href="/article-two">文章二 · 再次点击，复用右侧</a></li>
+        <li><a href="/article-blank" target="_blank">带 target="_blank" 的链接</a></li>
+        <li><a href="/client-route" id="spa">带前端路由处理的链接</a></li>
+      </ul>
+    </section>
+    <section>
+      <h2>应保留原有行为</h2>
+      <ul>
+        <li><a href="#anchor">页内锚点 · 滚动到下方</a></li>
+        <li><a href="/download" download>下载测试文件</a></li>
+        <li><a href="/modified-click">按住 Ctrl / Shift 或使用鼠标中键点击</a></li>
+        <li><button id="js-button">JavaScript 按钮（不属于链接）</button></li>
+      </ul>
+      <small>也可测试固定标签页、标签组、关闭右侧后重开，以及在扩展弹窗中暂停和恢复。</small>
+    </section>
+    <section id="anchor"><h2>锚点目标</h2><p>这次点击应只滚动当前页面。</p></section>
+  </main>
+  <script>
+    const documentId = crypto.randomUUID().slice(0, 8);
+    let loads = '不可用';
+    try {
+      loads = Number(sessionStorage.getItem('autoSplitDemoLoads') || 0) + 1;
+      sessionStorage.setItem('autoSplitDemoLoads', String(loads));
+    } catch {}
+    let resizes = 0;
+    let focusChanges = 0;
+    function report() {
+      document.querySelector('#diagnostics').textContent =
+        `文档标识 ${documentId} · 加载次数 ${loads} · 宽度 ${innerWidth}px · resize ${resizes} 次 · focus/blur ${focusChanges} 次`;
+    }
+    window.addEventListener('resize', () => { resizes++; report(); });
+    window.addEventListener('focus', () => { focusChanges++; report(); });
+    window.addEventListener('blur', () => { focusChanges++; report(); });
+    report();
+    document.querySelector('#route').textContent = location.pathname;
+    document.querySelector('#spa').addEventListener('click', event => {
+      event.preventDefault();
+      history.pushState({}, '', '/client-route');
+      document.querySelector('#route').textContent = '前端路由已处理：/client-route';
+    });
+    document.querySelector('#js-button').addEventListener('click', event => {
+      event.target.textContent = '原有按钮事件正常执行';
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,161 @@
+:root {
+  color-scheme: light;
+  font-family: "Segoe UI", "Microsoft YaHei", sans-serif;
+  color: #203046;
+  background: #f8fafc;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  width: 340px;
+  margin: 0;
+  padding: 24px;
+}
+
+header {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.mark {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 13px;
+  background: #e5edff;
+  color: #395cc6;
+  font-size: 30px;
+}
+
+h1 {
+  margin: 0;
+  font-size: 21px;
+  font-weight: 700;
+  letter-spacing: -.5px;
+}
+
+header p {
+  margin: 5px 0 0;
+  font-size: 12px;
+  color: #6a778b;
+}
+
+.preview {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px;
+  margin: 24px 0;
+  border: 1px solid #d8e2f4;
+  border-radius: 11px;
+  overflow: hidden;
+  background: #d8e2f4;
+}
+
+.preview span {
+  padding: 10px 10px;
+  text-align: center;
+  font-size: 12px;
+  background: white;
+  color: #6a778b;
+}
+
+.preview span+span {
+  background: #edf2ff;
+  color: #395cc6;
+}
+
+.preview b {
+  margin-left: 7px;
+}
+
+.setting {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+}
+
+strong {
+  display: block;
+  font-size: 14px;
+}
+
+small {
+  display: block;
+  margin-top: 5px;
+  color: #6a778b;
+  font-size: 11px;
+}
+
+input {
+  appearance: none;
+  width: 42px;
+  height: 24px;
+  border-radius: 24px;
+  background: #bac4d2;
+  padding: 3px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+input::before {
+  content: "";
+  display: block;
+  width: 18px;
+  height: 18px;
+  background: white;
+  border-radius: 50%;
+  transition: transform .15s;
+}
+
+input:checked {
+  background: #4264d5;
+}
+
+input:checked::before {
+  transform: translateX(18px);
+}
+
+input:disabled {
+  opacity: .5;
+  cursor: wait;
+}
+
+input:focus-visible {
+  outline: 3px solid #94adff;
+  outline-offset: 3px;
+}
+
+#status {
+  margin: 18px 0;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  line-height: 1.6;
+  background: #eaf3ee;
+  color: #337052;
+}
+
+#status[data-warning="true"] {
+  background: #fff1dc;
+  color: #86590c;
+}
+
+footer {
+  border-top: 1px solid #e3e8ef;
+  padding-top: 14px;
+  color: #7b8697;
+  font-size: 11px;
+  line-height: 1.9;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  input::before {
+    transition: none;
+  }
+}
