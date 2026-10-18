@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Auto Split · 链接右侧打开",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "点击网页链接，在 Chrome 原生 Split View 右侧打开，并保留左侧页面。",
   "minimum_chrome_version": "155",
   "permissions": ["storage"],

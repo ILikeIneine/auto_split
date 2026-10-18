@@ -34,9 +34,9 @@ export function createSplitController(api) {
       }
       // Clicking in either pane navigates the right pane; the left stays put.
       const right = pair[1];
-      await api.tabs.update(right.id, { url });
-      // Both panes are already visible. Keep the user's focus where it is:
-      // activating right adds a needless blur/focus cycle to the source page.
+      // Navigate and activate the destination together so subsequent keyboard
+      // input goes to the page the user just opened.
+      await api.tabs.update(right.id, { url, active: true });
       return { ok: true, tabId: right.id, reused: true };
     }
 
@@ -44,7 +44,7 @@ export function createSplitController(api) {
     // index uses the native default: the new tab is on the right.
     const right = await api.tabs.create({
       url,
-      active: false,
+      active: true,
       windowId: source.windowId,
       splitWithTabId: source.id
     });

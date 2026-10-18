@@ -3,8 +3,8 @@ import test from "node:test";
 import { createSplitController, webUrl } from "../extension/split-controller.js";
 
 function browser({ split = false, enabled = true, supported = true } = {}) {
-  const tabs = new Map([[1, { id: 1, windowId: 7, index: 0, splitViewId: split ? 10 : -1 }]]);
-  if (split) tabs.set(2, { id: 2, windowId: 7, index: 1, splitViewId: 10 });
+  const tabs = new Map([[1, { id: 1, windowId: 7, index: 0, active: true, splitViewId: split ? 10 : -1 }]]);
+  if (split) tabs.set(2, { id: 2, windowId: 7, index: 1, active: false, splitViewId: 10 });
   const calls = [];
   const api = {
     storage: { local: { get: async () => ({ enabled }) } },
@@ -21,12 +21,14 @@ function browser({ split = false, enabled = true, supported = true } = {}) {
         const source = tabs.get(options.splitWithTabId);
         assert.equal(source.splitViewId, -1, "must not create twice for an already split tab");
         source.splitViewId = 10;
-        const tab = { id: 2, windowId: 7, index: 1, splitViewId: 10, url: options.url };
+        const tab = { id: 2, windowId: 7, index: 1, splitViewId: 10, url: options.url, active: options.active };
+        if (tab.active) for (const existing of tabs.values()) existing.active = false;
         tabs.set(2, tab);
         return tab;
       },
       update: async (id, options) => {
         calls.push(["update", id, options]);
+        if (options.active) for (const existing of tabs.values()) existing.active = false;
         Object.assign(tabs.get(id), options);
         return tabs.get(id);
       }
@@ -42,17 +44,21 @@ test("first link opens a native split in the source window, right by default", a
   assert.equal(result.ok, true);
   assert.equal(result.reused, false);
   assert.deepEqual(b.calls, [["create", {
-    url: "https://example.com/article", active: false, windowId: 7, splitWithTabId: 1
+    url: "https://example.com/article", active: true, windowId: 7, splitWithTabId: 1
   }]]);
+  assert.equal(b.tabs.get(2).active, true);
+  assert.equal(b.tabs.get(1).active, false);
 });
 
 test("existing native split reuses the right pane even if query order is reversed", async () => {
   const b = browser({ split: true });
   await b.controller.openLink(1, "https://example.com/next");
   assert.deepEqual(b.calls, [
-    ["update", 2, { url: "https://example.com/next" }]
+    ["update", 2, { url: "https://example.com/next", active: true }]
   ]);
   assert.equal(b.tabs.get(1).url, undefined);
+  assert.equal(b.tabs.get(2).active, true);
+  assert.equal(b.tabs.get(1).active, false);
 });
 
 test("clicking inside the right pane navigates right and preserves left", async () => {
@@ -94,7 +100,7 @@ test("pause and unsupported browsers do not mutate tabs", async () => {
   }
 });
 
-test("opening, reusing, and recreating a split never activate the right pane", async () => {
+test("opening, reusing, and recreating a split activate the destination and preserve the source", async () => {
   const b = browser();
   await b.controller.openLink(1, "https://example.com/one");
   await b.controller.openLink(1, "https://example.com/two");
@@ -102,20 +108,21 @@ test("opening, reusing, and recreating a split never activate the right pane", a
   b.tabs.get(1).splitViewId = -1;
   await b.controller.openLink(1, "https://example.com/three");
   assert.equal(b.calls.filter(call => call[0] === "create").length, 2);
-  assert.ok(b.calls.every(call => call[0] === "create" ? call[1].active === false : !("active" in call[2])));
+  assert.ok(b.calls.every(call => call[0] === "create" ? call[1].active === true : call[2].active === true));
   assert.ok(b.calls.every(call => call[0] !== "update" || call[1] !== 1));
+  assert.equal(b.tabs.get(2).active, true);
+  assert.equal(b.tabs.get(1).url, undefined);
 });
 
-test("right-pane navigation issues no focus updates even when right is already active", async () => {
+test("clicking in an already active right pane preserves its activation and the left page", async () => {
   const b = browser({ split: true });
+  b.tabs.get(1).active = false;
   b.tabs.get(2).active = true;
-  const update = b.api.tabs.update;
-  b.api.tabs.update = async (id, properties) => {
-    if (properties.active) throw new Error("Window closed during focus");
-    return update(id, properties);
-  };
   assert.equal((await b.controller.openLink(2, "https://example.com/")).ok, true);
-  assert.deepEqual(b.calls, [["update", 2, { url: "https://example.com/" }]]);
+  assert.deepEqual(b.calls, [["update", 2, { url: "https://example.com/", active: true }]]);
+  assert.equal(b.tabs.get(2).active, true);
+  assert.equal(b.tabs.get(1).active, false);
+  assert.equal(b.tabs.get(1).url, undefined);
 });
 
 test("an API rejection does not poison the next click's queue", async () => {
